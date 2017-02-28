@@ -1,11 +1,14 @@
 //#define _CRT_SECURE_NO_DEPRECATE
 #include <iostream>
 #include <vector>
+#include <omp.h>
+#include <stdlib.h>
 //#include <stack>
 using namespace std;
 
-int s;
+const int NUM_threads = 4; // количество потоков
 const int INF= 1000000;
+int s;
 vector<int> pred;
 
 void printway(int t)
@@ -34,29 +37,45 @@ int main()
 	d[s]=0;
 	vector <bool> u(n);
 
+	int t1, len; 
+	
+	long double clockStart, clockStop;
+	clockStart = omp_get_wtime();	
+	
+	#pragma omp parallel for private (j, v, t1, len) shared (i, n, u, d, pred, g) num_threads (NUM_THREADS)
 	for(i=0; i<n; ++i)
 	{
 		v=-1;
 		for(j=0; j<n; ++j)
-			if(!u[j] && (v==-1 || d[j]<d[v]))
-				v=j;
-
-	if(d[v]== INF) break;
-	u[v]=true;
-	for(size_t j=0; j<g[v].size(); ++j)
+			
+			#pragma omp critical (value)
+			{
+				if(!u[j] && (v==-1 || d[j]<d[v]))
+					v=j;
+			}
+		
+		if(d[v]== INF) break;
+		u[v]=true;
+		for(size_t j=0; j<g[v].size(); ++j)
 		{
-			int t1= g[v][j].first, len = g[v][j].second;
-				if(d[v]+len < d[t1])
+			t1= g[v][j].first;
+			len = g[v][j].second;
+			if(d[v]+len < d[t1])
+			{
+				#pragma omp atomic
 				{
 					d[t1]=d[v]+len;
 					pred[t1]=v;
 				}
+			}
 		}
 	}
 
+clockStop = omp_get_wtime();
 cout<<"shortest way from "<<s<<" to "<<t<<" is\n";
 printway(t);
 cout<<" "<<t<<endl;
 cout<<"it's length is "<<d[t]<<endl;
+cout << "seconds: " << (clockStop - clockStart) << endl;
 return 0;
 }
