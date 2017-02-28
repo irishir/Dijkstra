@@ -1,8 +1,4 @@
-// omp_dijkstra.cpp: определяет точку входа для консольного приложения.
-//
-
 #include "stdafx.h"
-//#define _CRT_SECURE_NO_DEPRECATE
 #include <iostream>
 #include <vector>
 #include <omp.h>
