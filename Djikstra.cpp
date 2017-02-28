@@ -1,12 +1,17 @@
+// omp_dijkstra.cpp: определяет точку входа для консольного приложения.
+//
+
+#include "stdafx.h"
 //#define _CRT_SECURE_NO_DEPRECATE
 #include <iostream>
 #include <vector>
 #include <omp.h>
 #include <stdlib.h>
+#include <cstdio>
 //#include <stack>
 using namespace std;
 
-const int NUM_threads = 4; // количество потоков
+const int NUM_threads = 2; // количество потоков
 const int INF= 1000000;
 int s;
 vector<int> pred;
@@ -17,7 +22,7 @@ void printway(int t)
 	if (pred[t] != s)
 		printway(pred[t]);
 	cout<<" "<<pred[t];
-}
+};
 
 int main()
 {
@@ -42,7 +47,7 @@ int main()
 	long double clockStart, clockStop;
 	clockStart = omp_get_wtime();	
 	
-	#pragma omp parallel for private (j, v, t1, len) shared (i, n, u, d, pred, g) num_threads (NUM_THREADS)
+	#pragma omp parallel for private (j, v, t1, len) shared (i, n, u, d, pred, g) num_threads (NUM_threads)
 	for(i=0; i<n; ++i)
 	{
 		v=-1;
@@ -54,7 +59,8 @@ int main()
 					v=j;
 			}
 		
-		if(d[v]== INF) break;
+		if(d[v]== INF) {}
+		else {
 		u[v]=true;
 		for(size_t j=0; j<g[v].size(); ++j)
 		{
@@ -62,15 +68,17 @@ int main()
 			len = g[v][j].second;
 			if(d[v]+len < d[t1])
 			{
-				#pragma omp atomic
+				#pragma omp critical (value) 
 				{
 					d[t1]=d[v]+len;
 					pred[t1]=v;
 				}
+				
 			}
 		}
 	}
-
+	
+	}
 clockStop = omp_get_wtime();
 cout<<"shortest way from "<<s<<" to "<<t<<" is\n";
 printway(t);
