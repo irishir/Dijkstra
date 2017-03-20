@@ -48,8 +48,7 @@ int main()
 	{
 		v=-1;
 		for(j=0; j<n; ++j)
-			
-			#pragma omp critical (value)
+
 			{
 				if(!u[j] && (v==-1 || d[j]<d[v]))
 					v=j;
