@@ -48,7 +48,8 @@ int main()
 	{
 		v=-1;
 		for(j=0; j<n; ++j)
-
+			
+			#pragma omp critical (value1)	
 			{
 				if(!u[j] && (v==-1 || d[j]<d[v]))
 					v=j;
@@ -63,7 +64,7 @@ int main()
 			len = g[v][j].second;
 			if(d[v]+len < d[t1])
 			{
-				#pragma omp critical (value) 
+				#pragma omp critical (value2) 
 				{
 					d[t1]=d[v]+len;
 					pred[t1]=v;
