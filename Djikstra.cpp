@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <iostream>
 #include <vector>
 #include <omp.h>
@@ -7,14 +7,21 @@
 //#include <stack>
 using namespace std;
 
-const int NUM_threads = 2; // РєРѕР»РёС‡РµСЃС‚РІРѕ РїРѕС‚РѕРєРѕРІ
+const int NUM_threads = 4; // количество потоков
 const int INF= 1000000;
 int s;
 vector<int> pred;
 
+bool checkway(int t)
+{
+	if(t==-1) return false;
+	if (pred[t] != s)
+		return checkway(pred[t]);
+	return true;
+};
+
 void printway(int t)
 {
-	
 	if (pred[t] != s)
 		printway(pred[t]);
 	cout<<" "<<pred[t];
@@ -22,7 +29,7 @@ void printway(int t)
 
 int main()
 {
-	int n,m,s,t,i,j,v,w,a,b;
+	int n,m,t,i,j,v,w,a,b;
 	freopen("input.txt", "r", stdin);
 	freopen("output.txt", "w", stdout);
 	cin>>n>>m>>s>>t;
@@ -77,9 +84,16 @@ int main()
 	}
 clockStop = omp_get_wtime();
 cout<<"shortest way from "<<s<<" to "<<t<<" is\n";
-printway(t);
-cout<<" "<<t<<endl;
-cout<<"it's length is "<<d[t]<<endl;
+if(checkway(t))
+{
+	printway(t);
+	cout<<" "<<t<<endl;
+	cout<<"it's length is "<<d[t]<<endl;
+}
+else
+{
+	cout<<"not exist"<<endl;
+}
 cout << "seconds: " << (clockStop - clockStart) << endl;
 return 0;
 }

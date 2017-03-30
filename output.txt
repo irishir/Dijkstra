@@ -1,4 +1,4 @@
-shortest way from 0 to4 is
-0 1 4
+shortest way from 0 to 4 is
+ 0 1 4
 it's length is 8
-seconds: 2.05262e-006
+seconds: 7.85068e-005
