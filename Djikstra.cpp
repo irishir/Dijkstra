@@ -7,7 +7,7 @@
 //#include <stack>
 using namespace std;
 
-const int NUM_threads = 4; // количество потоков
+const int NUM_threads = 4; 
 const int INF= 1000000;
 int s;
 vector<int> pred;
