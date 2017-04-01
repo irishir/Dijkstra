@@ -7,7 +7,7 @@
 //#include <stack>
 using namespace std;
 
-const int NUM_threads = 4; 
+const int NUM_threads = 4; // количество потоков
 const int INF= 1000000;
 int s;
 vector<int> pred;
@@ -44,19 +44,21 @@ int main()
 	pred.assign(n,-1);
 	d[s]=0;
 	vector <bool> u(n);
+	// u.assign(n,false);
 
 	int t1, len; 
 	
 	long double clockStart, clockStop;
 	clockStart = omp_get_wtime();	
 	
-	#pragma omp parallel for private (j, v, t1, len) shared (i, n, u, d, pred, g) num_threads (NUM_threads)
+	//#pragma omp parallel for private (i, j, v, t1, len) shared (n, u, d, pred, g) num_threads (NUM_threads)
 	for(i=0; i<n; ++i)
 	{
 		v=-1;
+		#pragma omp parallel for private (i, j, v, t1, len) shared (n, u, d, pred, g) num_threads (NUM_threads)
 		for(j=0; j<n; ++j)
 			
-			#pragma omp critical (value1)	
+			//#pragma omp critical (value1)
 			{
 				if(!u[j] && (v==-1 || d[j]<d[v]))
 					v=j;
@@ -65,6 +67,8 @@ int main()
 		if(d[v]== INF) {}
 		else {
 		u[v]=true;
+
+		#pragma omp parallel for private (i, j, v, t1, len) shared (n, u, d, pred, g) num_threads (NUM_threads)
 		for(size_t j=0; j<g[v].size(); ++j)
 		{
 			t1= g[v][j].first;
@@ -80,11 +84,12 @@ int main()
 			}
 		}
 	}
-	
 	}
+
 clockStop = omp_get_wtime();
 cout<<"shortest way from "<<s<<" to "<<t<<" is\n";
-if(checkway(t))
+
+if(checkway(t)) // if(d[v]==INF
 {
 	printway(t);
 	cout<<" "<<t<<endl;
