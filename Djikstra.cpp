@@ -7,7 +7,7 @@
 //#include <stack>
 using namespace std;
 
-const int NUM_threads = 4; // количество потоков
+const int NUM_threads = 2; 
 const int INF= 1000000;
 int s;
 vector<int> pred;
@@ -89,7 +89,7 @@ int main()
 clockStop = omp_get_wtime();
 cout<<"shortest way from "<<s<<" to "<<t<<" is\n";
 
-if(checkway(t)) // if(d[v]==INF
+if(checkway(t)) // if(d[v]==INF)
 {
 	printway(t);
 	cout<<" "<<t<<endl;
