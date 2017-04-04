@@ -1,14 +1,13 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include <iostream>
 #include <vector>
 #include <omp.h>
 #include <stdlib.h>
 #include <cstdio>
-//#include <stack>
 using namespace std;
 
 const int NUM_threads = 2; 
-const int INF= 1000000;
+const int INF= 1000000000;
 int s;
 vector<int> pred;
 
@@ -54,7 +53,7 @@ int main()
 	//#pragma omp parallel for private (i, j, v, t1, len) shared (n, u, d, pred, g) num_threads (NUM_threads)
 	for(i=0; i<n; ++i)
 	{
-		v=-1;
+		/*v=-1;
 		#pragma omp parallel for private (i, j, v, t1, len) shared (n, u, d, pred, g) num_threads (NUM_threads)
 		for(j=0; j<n; ++j)
 			
@@ -63,19 +62,41 @@ int main()
 				if(!u[j] && (v==-1 || d[j]<d[v]))
 					v=j;
 			}
+		*/
+		vector <int> minnums(NUM_threads);
+		#pragma omp parallel for private (v, j) shared (n, u, d, minnums) num_threads (NUM_threads)
+		for(int ithread=0;ithread<NUM_threads;++ithread)
+		{
+			v=-1;
+			int jstart=ithread*n/NUM_threads;
+			int jend=(ithread+1)*n/NUM_threads;
+			for(j=jstart; j<jend; ++j)
+			{
+				if(!u[j] && (v==-1 || d[j]<d[v]))
+					v=j;
+			}
+			minnums[ithread]=v;
+		}
+
+		v=-1;
+		for(int ithread=0;ithread<NUM_threads;++ithread)
+		{
+			if(minnums[ithread]!=-1&& (v==-1 || d[minnums[ithread]]<d[v]))
+				v=minnums[ithread];
+		}
 		
 		if(d[v]== INF) {}
 		else {
 		u[v]=true;
 
-		#pragma omp parallel for private (i, j, v, t1, len) shared (n, u, d, pred, g) num_threads (NUM_threads)
+		//#pragma omp parallel for private (i, j, v, t1, len) shared (n, u, d, pred, g) num_threads (NUM_threads)
 		for(size_t j=0; j<g[v].size(); ++j)
 		{
 			t1= g[v][j].first;
 			len = g[v][j].second;
 			if(d[v]+len < d[t1])
 			{
-				#pragma omp critical (value2) 
+				//#pragma omp critical (value2) 
 				{
 					d[t1]=d[v]+len;
 					pred[t1]=v;
