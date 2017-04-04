@@ -1,3 +1,4 @@
-shortest way from 5 to 4 is
-not exist
-seconds: 9.42932e-005
+shortest way from 0 to 68 is
+ 0 12 70 114 154 308 148 68
+it's length is 4704289
+seconds: 0.0336144
