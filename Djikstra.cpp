@@ -43,7 +43,6 @@ int main()
 	pred.assign(n,-1);
 	d[s]=0;
 	vector <bool> u(n);
-	// u.assign(n,false);
 
 	int t1, len; 
 	
@@ -63,22 +62,28 @@ int main()
 					v=j;
 			}
 		*/
+		// Вектор с числом элементов, равным кол-ву потоков, является общим и хранит все локальные минимумы. 
+		// Среди них нужно выбрать глобальный минимум
 		vector <int> minnums(NUM_threads);
 		#pragma omp parallel for private (v, j) shared (n, u, d, minnums) num_threads (NUM_threads)
+		// Цикл ищет минимальный элемент, содержит число итераций, равное числу потоков
 		for(int ithread=0;ithread<NUM_threads;++ithread)
 		{
 			v=-1;
 			int jstart=ithread*n/NUM_threads;
 			int jend=(ithread+1)*n/NUM_threads;
+			// Цикл, который ищет локальный минимум в интервале [jstart, jend)
 			for(j=jstart; j<jend; ++j)
 			{
 				if(!u[j] && (v==-1 || d[j]<d[v]))
 					v=j;
 			}
+			// Найденный минимум записывается в вектор minnums
 			minnums[ithread]=v;
 		}
 
 		v=-1;
+		// В глобальную переменную v записывается минимальный элемент из minnums
 		for(int ithread=0;ithread<NUM_threads;++ithread)
 		{
 			if(minnums[ithread]!=-1&& (v==-1 || d[minnums[ithread]]<d[v]))
